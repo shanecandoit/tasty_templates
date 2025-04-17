@@ -1,0 +1,16 @@
+-- Haskell Templates
+
+{% for type_name, type_def in definitions.types.items() %}
+data {{ type_name }} = {{ type_name }} {
+    {% for field_name, field_type in type_def.fields.items() %}
+    {{ field_name }} :: {% if field_type == 'string' %}String{% elif field_type == 'int' %}Int{% elif field_type == 'float' %}Float{% elif field_type == 'bool' %}Bool{% else %}{{ field_type }}{% endif %},
+    {% endfor %}
+} deriving (Show)
+
+{% endfor %}
+
+{% for func_name, func_def in definitions.functions.items() %}
+{{ func_name }} :: {% for param_name, param_type in func_def.parameters.items() %}{% if param_type == 'string' %}String{% elif param_type == 'int' %}Int{% elif param_type == 'float' %}Float{% elif param_type == 'bool' %}Bool{% elif param_type.startswith('list[') %}[{% set inner_type = param_type[5:-1] %}{% if inner_type == 'string' %}String{% elif inner_type == 'int' %}Int{% elif inner_type == 'float' %}Float{% else %}{{ inner_type }}{% endif %}]{% else %}{{ param_type }}{% endif %}{% endfor %} -> {% if func_def.return_type == 'string' %}String{% elif func_def.return_type == 'int' %}Int{% elif func_def.return_type == 'float' %}Float{% elif func_def.return_type == 'bool' %}Bool{% else %}{{ func_def.return_type }}{% endif %}
+{{ func_name }} = undefined -- Implementation goes here
+
+{% endfor %}

@@ -1,0 +1,18 @@
+{% set type_mapping = {"string": "str", "int": "int", "float": "float"} %}
+{% for type_name, type_def in definitions.types.items() %}
+class {{ type_name }}:
+    def __init__(self, {% for field_name, field_type in type_def.fields.items() %}{{ field_name }}: {{ type_mapping.get(field_type, field_type) }}{% if not loop.last %}, {% endif %}{% endfor %}):
+        {% for field_name, field_type in type_def.fields.items() %}
+        self.{{ field_name }} = {{ field_name }}
+        {% endfor %}
+
+{% endfor %}
+
+{% for func_name, func_def in definitions.functions.items() %}
+{% if func_def.summary %}
+    # {{ func_def.summary }}
+{% endif %}
+def {{ func_name }}({% for param_name, param_type in func_def.parameters.items() %}{{ param_name }}: {{ type_mapping.get(param_type, param_type) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> str:
+    pass
+
+{% endfor %}

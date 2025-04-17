@@ -1,0 +1,30 @@
+types:
+  Customer:
+    fields:
+      name: string
+      age: int
+      email: string
+  Order:
+    fields:
+      order_id: int
+      customer_id: int
+      order_date: string
+      total_amount: float
+
+functions:
+  create_customer:
+    parameters:
+      name: string
+      age: int
+      email: string
+    return_type: Customer
+  get_order_by_id:
+    parameters:
+      order_id: int
+    return_type: Order
+  calculate_total:
+    parameters:
+      customer: Customer
+      orders: list[Order]
+    return_type: float
+    summary: "Calculates the total amount spent by a customer based on their orders."

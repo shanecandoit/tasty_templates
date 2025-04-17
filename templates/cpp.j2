@@ -1,0 +1,73 @@
+#ifndef TYPES_H
+#define TYPES_H
+
+// C++ Templates
+
+#include <string>
+#include <vector>
+
+#pragma once
+
+{% for type_name, type_def in definitions.types.items() %}
+struct {{ type_name }} {
+    {% for field_name, field_type in type_def.fields.items() %}
+    {% if field_type == 'string' %}
+    std::string {{ field_name }};
+    {% elif field_type == 'int' %}
+    int {{ field_name }};
+    {% elif field_type == 'float' %}
+    float {{ field_name }};
+    {% elif field_type == 'bool' %}
+    bool {{ field_name }};
+    {% else %}
+    {{ field_type }} {{ field_name }};
+    {% endif %}
+    {% endfor %}
+};
+
+{% endfor %}
+
+{% for func_name, func_def in definitions.functions.items() %}
+{% set return_type = func_def.return_type %}
+{% if return_type == 'string' %}
+{% set cpp_return_type = 'std::string' %}
+{% elif return_type == 'int' %}
+{% set cpp_return_type = 'int' %}
+{% elif return_type == 'float' %}
+{% set cpp_return_type = 'float' %}
+{% elif return_type == 'bool' %}
+{% set cpp_return_type = 'bool' %}
+{% else %}
+{% set cpp_return_type = return_type %}
+{% endif %}
+
+{{ cpp_return_type }} {{ func_name }}(
+{% for param_name, param_type in func_def.parameters.items() %}
+    {% if param_type == 'string' %}
+    std::string {{ param_name }}
+    {% elif param_type == 'int' %}
+    int {{ param_name }}
+    {% elif param_type == 'float' %}
+    float {{ param_name }}
+    {% elif param_type == 'bool' %}
+    bool {{ param_name }}
+    {% elif param_type.startswith('list[') %}
+    {% set inner_type = param_type[5:-1] %}
+    {% if inner_type == 'string' %}
+    std::vector<std::string> {{ param_name }}
+    {% elif inner_type == 'int' %}
+    std::vector<int> {{ param_name }}
+    {% elif inner_type == 'float' %}
+    std::vector<float> {{ param_name }}
+    {% else %}
+    std::vector<{{ inner_type }}> {{ param_name }}
+    {% endif %}
+    {% else %}
+    {{ param_type }} {{ param_name }}
+    {% endif %}{% if not loop.last %}, {% endif %}
+{% endfor %}
+);
+
+{% endfor %}
+
+#endif
