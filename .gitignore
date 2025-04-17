@@ -1,0 +1,5 @@
+*.pyc
+generated_templates/
+
+.vscode
+
